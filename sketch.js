@@ -35,7 +35,7 @@ let audioFile;
 
 function preload() {
 //   audioFile = document.getElementById("input").files[0];
-  song = loadSound('./jada.mpeg');
+  song = loadSound('./assets/jada.mpeg');
 }
 
 function setup() {
@@ -63,9 +63,12 @@ function draw() {
 
   // Check if the song is playing
   if (song.isPlaying()) {
-    let camZ = map(mouseX, 0, width, -200, 0);
-    let camY = map(mouseY, 0, height/4, 0, 200);
-    camera(0, camY, camZ, 0, 0, 0, 0, 1, 0);
+    // let camZ = map(mouseX, 0, width, -200, 0);
+    // let camY = map(mouseY, 0, height/4, 0, 200);
+    // camera(0, 0, 0, 0, 0, 0, 0, 1, 0);
+    let fov = map(mouseX, 0, width, 0, 360);
+    let cameraZ = (height) / tan((360 / 3));
+    perspective(fov, width / height, cameraZ / 10, cameraZ * 100);
     // fill(random(255),random(255),random(255));
     
     // Analyze the audio spectrum
