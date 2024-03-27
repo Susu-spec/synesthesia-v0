@@ -1,6 +1,6 @@
 # synesthesia-v0
 
-A music visualiser created using p5.js, and vanilla html, and css.
+A music visualiser created using p5.js, and html, and vanilla css.
 > I will only create a link to this version of the project after it is successfully migrated to [React.js](https://react.dev/).
 > This version is my first draft of the visualiser.
 
