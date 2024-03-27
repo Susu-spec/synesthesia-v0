@@ -9,6 +9,9 @@ var fft;
 let spectrum;
 let fov;
 let cameraZ;
+var camX;
+let camY;
+let camZ;
 let ease;
 let newTRo = 0;
 let newCRo = 0;
@@ -17,6 +20,19 @@ let newframesToRotate = 200;
 let waveform;
 let rotateOp = false;
 let speed = 100;
+let approachingSpeed = 2;
+let angles = [];
+let numParticles = 50;
+let numRings = 4;
+
+var position;
+let particle;
+let particles = [];
+let particleSystem;
+let buffers = [];
+// let location;
+// let velocity;
+// let accelerator;
 
 
 
@@ -31,11 +47,9 @@ var h = window.innerHeight;
 let audioFile;
 
 
-
-
 function preload() {
 //   audioFile = document.getElementById("input").files[0];
-  song = loadSound('./assets/jada.mpeg');
+  song = loadSound('./assets/lust.mpeg');
 }
 
 function setup() {
@@ -50,25 +64,35 @@ function setup() {
   // document.getElementById('fileInput').addEventListener('change', handleFileSelect, false);
 
   stroke(199, 80, 88);
-  // 
- 
-  // stroke(0);
+  ambientLight(200);
   strokeWeight(2.7);
+  particlesystem();
+  
+  // let vertices = bumpySphere(intensity, peakDetect);
+
+
+  // Create buffers for each ring of particles
   
 }
+  
+  // stroke(0);
+  
+   //Particlesystem is initialized with the starting positions
 
 
 
 function draw() {
 
+    
   // Check if the song is playing
   if (song.isPlaying()) {
-    // let camZ = map(mouseX, 0, width, -200, 0);
-    // let camY = map(mouseY, 0, height/4, 0, 200);
-    // camera(0, 0, 0, 0, 0, 0, 0, 1, 0);
-    let fov = map(mouseX, 0, width, 0, 360);
+    
+    camX = map(mouseX, 0, width, 100, 200);
+    camY = map(mouseY, 0, height/4, 100, 200);
+    camera(camX, camY, 0, 0, 0, 0, 0, 1, 0);
+    let fov = map(mouseX, width / 2, width, 0, 360);
     let cameraZ = (height) / tan((360 / 3));
-    perspective(fov, width / height, cameraZ / 10, cameraZ * 100);
+    perspective(fov, width / height, 10, 1000);
     // fill(random(255),random(255),random(255));
     
     // Analyze the audio spectrum
@@ -87,18 +111,25 @@ function draw() {
     }
     waves = map(total/waveform.length, -1, 1, 0, 1);
     intensity = map(sum / spectrum.length, 0, 255, 0, 1);
-    // console.log(intensity);
   }
   
-  // Update the bumpy sphere visualization
-  bumpySphere(intensity, peakDetect, waves);
-  // spiral_3d(intensity, waves);
-  // Update UI elements
-  // let displayDensity = int(map(densitySlider.value(), 3, 62, 1, 60));
-  // density.html("Density value: " + displayDensity);
-  // thetaMax.html("Theta Max value: " + thetaMaxSlider.value());
+  bumpySphere(intensity, peakDetect);
+  for (let particleRing of particles) {
+    // console.log(particleRing);
+    for (let particle of particleRing) {
+      particle.update(); // Assuming Particle class has an update method
+      particle.display(); // Assuming Particle class has a display method
+    }
+  }
+  
 
-  // phiMax.html("Phi Max value: " + phiMaxSlider.value());
+//  particleSystem = new Particlesystem(particles);
+//  particleSystem.run();
+//  particleSystem.display();
+  
+  
+  
+  
 }
   // control phi value 
   // normalSphere();
@@ -162,62 +193,36 @@ function sphericalSpiral() {
     endShape();
   }
 
-  function bumpySphere(intensity, peakDetect, waves) {
-   
-  // Clear previous frame
-  clear();
-  // let currentTime = millis();
-  // let lastFrameTime = lastFrameMillis / 1000;
-  // let dt = (currentTime - lastFrameMillis);
-  // lastFrameMillis = currentTime;
-
-  a = random(255);
-  b = random(255);
-  c = random(255);
-  
- 
-  
-  if (song.isPlaying()) {
+  function bumpySphere(intensity, peakDetect) {
+    let vertices = [];
+    clear();
+    
+    if (song.isPlaying()) {
     if (peakDetect.isDetected) {
     newTRo -= 80;
-    // stroke(a, b, c);
-    
     }
     let j = newTRo / 5000;
     newTRo += j;
     ease = sqrt(0.005);
-    // console.log(ease);
     newCRo = lerp(newCRo, newTRo, abs(ease));
-    rotateZ(newCRo);
+    rotateY(newCRo);
+  
   }
-  
-
-  
-  // if (peakDetect.isDetected) {
-  //   newCRo -= 80;
-  // }
-  // let j = (newTRo - newCRo) / 120;
-  // newCRo += j;
-  // console.log(newCRo)
-  // rotateZ(newCRo);
-  background(230, 50, 15);
+  // background(230, 50, 15);
   orbitControl(2, 2);
- 
   for (let phi = 0; phi < 180; phi += 2) {
     beginShape(POINTS);
-    // stroke(r, g, b);
-    
-    for (let theta = 0; theta < 360; theta += 2) {
-      // stroke(r, g, b); 
-     
-      let x = (r * (1 + ((intensity * 10)) * sin(theta * 5) * sin(phi * 6))) * sin(phi) * cos(theta);
-      let y = (r * (1 + ((intensity * 10)) * sin(theta * 5) * sin(phi * 6))) * sin(phi) * sin(theta);
-      let z = (r * (1 + ((intensity * 10)) * sin(theta * 5) * sin(phi * 6))) * cos(phi);
+    for (let theta = 0; theta < 360; theta += 2) {     
+      let x = (r * (1 + ((intensity * 3)) * sin(theta * 5) * sin(phi * 6))) * sin(phi) * cos(theta);
+      let y = (r * (1 + ((intensity * 3)) * sin(theta * 5) * sin(phi * 6))) * sin(phi) * sin(theta);
+      let z = (r * (1 + ((intensity * 3)) * sin(theta * 5) * sin(phi * 6))) * cos(phi);
       
       vertex(x, y, z);
+      vertices.push(createVector(x, y, z));
     }
     endShape();
   }
+  return vertices;
 }
 
 function mouseClicked() {
@@ -249,3 +254,79 @@ function onLoad() {
 function onError() {
   console.error('Error loading audio file.');
 }
+
+
+
+class Particle {
+  constructor(x, y, z) {
+    this.position = createVector(x, y, z);
+    this.velocity = p5.Vector.random3D();
+    this.rotationAngle = 0;
+    this.rotationSpeed = 1;
+    // this.acceleration = createVector(x, y, z);
+  }
+
+  update() {
+    // this.velocity.add(this.acceleration);
+      this.velocity.mult(1.05);
+      
+      this.position.add(this.velocity);
+      let axis = createVector(0, 0, 1);
+      this.rotationAngle += this.rotationSpeed;
+      this.position.rotate(this.rotationAngle, axis);
+      if (this.position.mag() > 400) {
+        this.position.normalize().mult(400);
+      }
+  }
+
+  display() {
+    push();
+    translate(this.position);
+    // stroke(214, 99, 54);
+    stroke(255);
+    strokeWeight(2);
+    fill(199, 80, 88);
+    // fill(214, 99, 54);
+    ellipse(0, 0, 2.7, 2.7);
+    // rotateY(20);
+    pop();
+  }
+}
+
+function particlesystem () {
+  var vertices = bumpySphere(intensity, peakDetect);
+  let angleOffsets = [];
+  // let tiltAngle = [];
+  for (let ring = 0; ring < numRings; ring++) {
+    angleOffsets.push(ring * TWO_PI / numRings);
+  }
+
+  // for (let i = 0; i < numParticles; i++) {
+  //   tiltAngle.push(random(0, 2 * PI));
+  // }
+
+  for (let ring = 0; ring < numRings; ring++) {
+    var particleRing = [];
+    let angleOffset = angleOffsets[ring];
+
+    for (let i = 0; i < numParticles; i++) {
+      let index = floor(i * vertices.length / numParticles);
+      let vert = vertices[index];
+      let angle = i * TWO_PI / numParticles + angleOffset;
+      
+
+      let x = vert.x + cos(angle) * cos(angle) * (1000);
+      let y = vert.y + sin(angle) * sin(angle) * (1000);
+      let z = vert.z;
+
+      particleRing.push(new Particle(x, y, z));
+      console.log(9)
+  }
+
+  particles.push(particleRing);
+}
+
+
+  
+}
+
