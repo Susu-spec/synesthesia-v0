@@ -117,45 +117,14 @@ function draw() {
   for (let particleRing of particles) {
     // console.log(particleRing);
     for (let particle of particleRing) {
-      particle.update(); // Assuming Particle class has an update method
-      particle.display(); // Assuming Particle class has a display method
+      particle.update(); 
+      particle.display(); 
     }
-  }
-  
-
-//  particleSystem = new Particlesystem(particles);
-//  particleSystem.run();
-//  particleSystem.display();
-  
-  
-  
-  
+  }  
 }
-  // control phi value 
-  // normalSphere();
-  // console.log(fft);
-  // sphericalSpiral();
-  // spiral_3d();
-  
 
- 
-  
-  // let displayDensity = int(map(densitySlider.value(), 3, 62, 1, 60));
-  // density.html("Density value: " + displayDensity);
-
-
-
-
-  // noStroke();
-//   noFill();
-//   stroke(0,255,0);
-//   translate(noise(xOff)*100, noise(yOff)*height*0.01, -noise(zOff)*600);
 //   rotateY(millis() / 10000);
 //   sphere(300);
-  
-//   xOff+=0.001;
-//   yOff+=0.001;
-//   zOff+=0.001;
 
 
 function normalSphere() {
