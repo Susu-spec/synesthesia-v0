@@ -18,5 +18,7 @@ A music visualiser created using p5.js, and html, and vanilla css.
 
 ## General Notes
 > I have a lot to say about the migration process, particularly the p5.js library addon problem with React.js. I've been here for days. 
-> Issue 1: [Fix](https://github.com/P5-wrapper/react/issues/61) - Could be one of these issues, in my case, p5Sound did exist within my node_modules folder, I had to delete the folder and reinstall the packages.
-> Issue 2: [Fix](https://github.com/processing/p5.js/issues/4479) - "ReferenceError: p5 is not defined", this has to do with how modern bundlers handle p5 and its addons. I'm not sure why the p5.js maintainers haven't solved this issue, I'll probably create a bug report if I don't find one.
+<br>
+> - Issue 1: [Fix](https://github.com/P5-wrapper/react/issues/61) - Could be one of these issues, in my case, p5Sound did exist within my node_modules folder, I had to delete the folder and reinstall the packages.
+<br>
+> - Issue 2: [Fix](https://github.com/processing/p5.js/issues/4479) - "ReferenceError: p5 is not defined", this has to do with how modern bundlers handle p5 and its addons. I'm not sure why the p5.js maintainers haven't solved this issue, I'll probably create a bug report if I don't find one.
