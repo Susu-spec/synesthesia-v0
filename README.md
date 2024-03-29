@@ -1,10 +1,13 @@
 # synesthesia-v0
 
 ## Demo
-Uploading Spherical Sphere - Google Chrome 2024-03-28 17-04-33_Trim (2)_Trim_Trim_Trim.mp4…
+
+https://github.com/Susu-spec/synesthesia-v0/assets/98518852/9a70a54a-02d9-4118-bf65-9291885af8ce
 
 
-Uploading Spherical Sphere - Google Chrome 2024-03-28 17-05-35_Trim.mp4…
+
+https://github.com/Susu-spec/synesthesia-v0/assets/98518852/bbd260f9-85f0-4bef-a060-f25c6d5db6b8
+
 
 
 A music visualiser created using p5.js, and html, and vanilla css.
