@@ -2,13 +2,9 @@
 
 ## Demo
 
-https://github.com/Susu-spec/synesthesia-v0/assets/98518852/9a70a54a-02d9-4118-bf65-9291885af8ce
+https://github.com/Susu-spec/synesthesia-v0/assets/98518852/f5b1770c-ee66-4341-a74d-f89ea8800758
 
-
-
-https://github.com/Susu-spec/synesthesia-v0/assets/98518852/bbd260f9-85f0-4bef-a060-f25c6d5db6b8
-
-
+https://github.com/Susu-spec/synesthesia-v0/assets/98518852/2c26c240-504c-4efb-9bd5-130f568bdeca
 
 A music visualiser created using p5.js, and html, and vanilla css.
 > I'll create a link to this version of the project after it is successfully migrated to [React.js](https://react.dev/).
