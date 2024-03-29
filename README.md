@@ -1,5 +1,12 @@
 # synesthesia-v0
 
+## Demo
+Uploading Spherical Sphere - Google Chrome 2024-03-28 17-04-33_Trim (2)_Trim_Trim_Trim.mp4…
+
+
+Uploading Spherical Sphere - Google Chrome 2024-03-28 17-05-35_Trim.mp4…
+
+
 A music visualiser created using p5.js, and html, and vanilla css.
 > I'll create a link to this version of the project after it is successfully migrated to [React.js](https://react.dev/).
 > This version is my first draft of the visualiser.
