@@ -4,6 +4,9 @@
 
 let intensity = 0;
 let waves = 0;
+let bass = 0;
+let subBass;
+let mapBass;
 var song;
 var fft;
 let spectrum;
@@ -23,16 +26,16 @@ let speed = 100;
 let approachingSpeed = 2;
 let angles = [];
 let numParticles = 50;
-let numRings = 4;
+let numRings = 20;
 
 var position;
 let particle;
 let particles = [];
 let particleSystem;
-let buffers = [];
+let particleSize;
 // let location;
 // let velocity;
-// let accelerator;
+let accelerator;
 
 
 
@@ -49,7 +52,7 @@ let audioFile;
 
 function preload() {
 //   audioFile = document.getElementById("input").files[0];
-  song = loadSound('./assets/lust.mpeg');
+  song = loadSound('./assets/dreaming.mpeg');
 }
 
 function setup() {
@@ -57,6 +60,7 @@ function setup() {
   
   fft = new p5.FFT(0.8, 1024);
   peakDetect = new p5.PeakDetect();
+
   waveform = fft.waveform();
   
   angleMode(DEGREES);
@@ -87,9 +91,12 @@ function draw() {
   // Check if the song is playing
   if (song.isPlaying()) {
     
-    camX = map(mouseX, 0, width, 100, 200);
+    for (let i = 0; i < mouseX; i++) {
+      camX = map(i, 0, width, 100, 200);
+    }
+    
     camY = map(mouseY, 0, height/4, 100, 200);
-    camera(camX, camY, 0, 0, 0, 0, 0, 1, 0);
+    // camera(camX, camY, 0, 0, 0, 0, 0, 1, 0);
     let fov = map(mouseX, width / 2, width, 0, 360);
     let cameraZ = (height) / tan((360 / 3));
     perspective(fov, width / height, 10, 1000);
@@ -98,33 +105,57 @@ function draw() {
     // Analyze the audio spectrum
 
     spectrum = fft.analyze();
+    var bass    = fft.getEnergy( "bass" );
+    var treble  = fft.getEnergy( "treble" );
+    var mid     = fft.getEnergy( "mid" );
+    
     peakDetect.update(fft);
     
-    // Calculate intensity based on the average spectrum value
+    // Calculate sum of each frequency range
     let sum = 0;
     let total = 0;
+    let bassSum = [];
+    let trebleSum = [];
+    let midSum = [];
+
+  
+    // console.log(spectrum.length);
     for (let i = 0; i < spectrum.length; i++) {
-      sum += spectrum[i];
+      sum += spectrum[i]; //sum is the total value of all 1024 ints
     }
+
+    // console.log(waveform.length);
     for (let j = 0; j < waveform.length; j++) {
       total += waveform[j];
     }
-    waves = map(total/waveform.length, -1, 1, 0, 1);
+    accelerator = map(mid, 0, 255, 1, 4)
+    waves = map(total / waveform.length, -1, 1, 0, 1);
     intensity = map(sum / spectrum.length, 0, 255, 0, 1);
+    particleSize = mapBassAndScale(bass);
+    console.log(particleSize)
+
   }
   
   bumpySphere(intensity, peakDetect);
   for (let particleRing of particles) {
-    // console.log(particleRing);
     for (let particle of particleRing) {
-      particle.update(); 
+      particle.update(particleSize); 
       particle.display(); 
     }
   }  
 }
 
-//   rotateY(millis() / 10000);
-//   sphere(300);
+function mapBassAndScale(mapBass) {
+  let exp = 2;
+  let min = 1;
+  let max = 2;
+
+  // let scaleSize = pow(mapBass, exp);
+  let mapSize = map(mapBass, 0, 100, min, max);
+
+
+  return mapSize;
+}
 
 
 function normalSphere() {
@@ -177,14 +208,15 @@ function sphericalSpiral() {
     rotateY(newCRo);
   
   }
-  // background(230, 50, 15);
+
+
   orbitControl(2, 2);
   for (let phi = 0; phi < 180; phi += 2) {
     beginShape(POINTS);
     for (let theta = 0; theta < 360; theta += 2) {     
-      let x = (r * (1 + ((intensity * 3)) * sin(theta * 5) * sin(phi * 6))) * sin(phi) * cos(theta);
-      let y = (r * (1 + ((intensity * 3)) * sin(theta * 5) * sin(phi * 6))) * sin(phi) * sin(theta);
-      let z = (r * (1 + ((intensity * 3)) * sin(theta * 5) * sin(phi * 6))) * cos(phi);
+      let x = (r * (1 + ((intensity * 3.5)) * sin(theta * 5) * sin(phi * 6))) * sin(phi) * cos(theta);
+      let y = (r * (1 + ((intensity * 3.5)) * sin(theta * 5) * sin(phi * 6))) * sin(phi) * sin(theta);
+      let z = (r * (1 + ((intensity * 3.5)) * sin(theta * 5) * sin(phi * 6))) * cos(phi);
       
       vertex(x, y, z);
       vertices.push(createVector(x, y, z));
@@ -232,11 +264,13 @@ class Particle {
     this.velocity = p5.Vector.random3D();
     this.rotationAngle = 0;
     this.rotationSpeed = 1;
+    // this.size;
     // this.acceleration = createVector(x, y, z);
   }
 
-  update() {
+  update(size) {
     // this.velocity.add(this.acceleration);
+      // this.velocity += accelerator;
       this.velocity.mult(1.05);
       
       this.position.add(this.velocity);
@@ -246,6 +280,10 @@ class Particle {
       if (this.position.mag() > 400) {
         this.position.normalize().mult(400);
       }
+      this.size = size;
+      // for (let i = 0; i < bassSum.length; i++) {
+      //   subBass = map(bassSum[i] / bassSum.length, 0, 255, 0, 1);
+      // }
   }
 
   display() {
@@ -256,7 +294,8 @@ class Particle {
     strokeWeight(2);
     fill(199, 80, 88);
     // fill(214, 99, 54);
-    ellipse(0, 0, 2.7, 2.7);
+    
+    ellipse(0, 0, this.size);
     // rotateY(20);
     pop();
   }
@@ -284,12 +323,11 @@ function particlesystem () {
       let angle = i * TWO_PI / numParticles + angleOffset;
       
 
-      let x = vert.x + cos(angle) * cos(angle) * (1000);
-      let y = vert.y + sin(angle) * sin(angle) * (1000);
+      let x = (vert.x + 200) + cos(angle) * cos(angle) * (1000);
+      let y = (vert.y + 200) + sin(angle) * sin(angle) * (1000);
       let z = vert.z;
 
-      particleRing.push(new Particle(x, y, z));
-      console.log(9)
+      particleRing.push(new Particle(x, y, z, bass));
   }
 
   particles.push(particleRing);
